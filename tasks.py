@@ -1,5 +1,6 @@
 import os
 import sys
+import shlex
 
 from invoke.tasks import task
 
@@ -31,20 +32,27 @@ def cbuild(
     install=False,
     install_prefix="./installed",
 ):
-    flags = "-DCMAKE_BUILD_TYPE=" + ("Debug" if debug else "Release")
-    flags += " -DBUILD_TESTS=" + ("ON" if tests else "OFF")
-    flags += " -DSANITIZE_ADDRESS=" + ("ON" if sanitize_address else "OFF")
-    flags += " -DSANITIZE_UB=" + ("ON" if sanitize_ub else "OFF")
-    flags += " -DSANITIZE_LEAK=" + ("ON" if sanitize_leak else "OFF")
-    flags += " " + other_flags
-    command_postfix = "> /dev/null 2>&1" if quiet else ""
-    c.run(f"{sys.executable} -m cmake -S . -B build {flags} {command_postfix}", pty=True)
-    c.run(f"{sys.executable} -m cmake --build build {command_postfix}", pty=True)
+    cmake_flags = [
+        f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}",
+        f"-DBUILD_TESTS={'ON' if tests else 'OFF'}",
+        f"-DSANITIZE_ADDRESS={'ON' if sanitize_address else 'OFF'}",
+        f"-DSANITIZE_UB={'ON' if sanitize_ub else 'OFF'}",
+        f"-DSANITIZE_LEAK={'ON' if sanitize_leak else 'OFF'}",
+    ]
+    if other_flags:
+        cmake_flags.append(other_flags)
+
+    flags_str = " ".join(cmake_flags)
+
+    run_kwargs = {"pty": not quiet, "hide": quiet}
+
+    c.run(f"{sys.executable} -m cmake -S . -B build {flags_str}", **run_kwargs)
+    c.run(f"{sys.executable} -m cmake --build build", **run_kwargs)
 
     if install:
         c.run(
-            f"{sys.executable} -m cmake --install build --prefix {install_prefix}",
-            pty=True,
+            f"{sys.executable} -m cmake --install build --prefix {shlex.quote(install_prefix)}",
+            **run_kwargs,
         )
 
 
