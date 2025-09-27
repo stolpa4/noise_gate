@@ -100,6 +100,11 @@ endif()
 
 #target_include_directories(noise_gate PUBLIC ${AVFORMAT_INCLUDE_DIR})
 
+# Or try an alternative:
+#find_package(FFMPEG REQUIRED COMPONENTS avformat)
+
+#target_link_libraries(noise_gate PUBLIC FFMPEG::avformat)
+
 ## Tests
 ########
 
@@ -113,9 +118,29 @@ endif()
 ## Installation
 ###############
 
+include(GNUInstallDirs)
+include(CMakePackageConfigHelpers)
+
 install(TARGETS noise_gate
-        RUNTIME DESTINATION bin
-        LIBRARY DESTINATION lib
-        ARCHIVE DESTINATION lib
-        INCLUDES DESTINATION include
-        FILE_SET HEADERS)
+        EXPORT noise_gate-targets
+        RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
+        LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        ARCHIVE DESTINATION ${CMAKE_INSTALL_LIBDIR}
+        FILE_SET HEADERS DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}
+)
+
+install(EXPORT noise_gate-targets
+        FILE noise_gate-targets.cmake
+        NAMESPACE noise_gate::
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/noise_gate
+)
+
+configure_package_config_file(
+        cmake/noise_gate-config.cmake.in
+        ${CMAKE_CURRENT_BINARY_DIR}/noise_gate-config.cmake
+        INSTALL_DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/noise_gate
+)
+
+install(FILES ${CMAKE_CURRENT_BINARY_DIR}/noise_gate-config.cmake
+        DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/noise_gate
+)
