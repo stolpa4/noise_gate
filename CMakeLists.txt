@@ -12,7 +12,7 @@ set(CMAKE_CXX_EXTENSIONS OFF)
 project(
         noise_gate
         VERSION 1.0.0
-        DESCRIPTION "C++ library for audio noise reduction"
+        DESCRIPTION "Library for audio noise reduction"
         LANGUAGES CXX C)
 
 ## Library and sources

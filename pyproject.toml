@@ -1,0 +1,17 @@
+[project]
+name = "noise_gate"
+version = "1.0.0"
+authors = [
+    { name = "Luciano Dato, Alexey Stolpovsky" },
+]
+description = "Library for audio noise reduction"
+readme = "README.md"
+requires-python = ">=3.12,<3.14"
+
+[project.optional-dependencies]
+dev = [
+    "invoke",
+    "clang-format",
+    "cmake",
+    "uv"
+]

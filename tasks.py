@@ -78,3 +78,52 @@ def clear(c):
 #
 # def _test_one(c):
 #     c.run(f"./build/tests/{PACKAGE_NAME}_test", pty=True)
+
+
+@task(post=[clear])
+def pysync(c, dev=True, update_lock=False, verbose=False):
+    cmd_postfix = ""
+    if dev:
+        cmd_postfix += " --extra dev"
+    else:
+        cmd_postfix += " --no-dev --no-editable"
+    if verbose:
+        cmd_postfix += " --verbose"
+    if not update_lock:
+        cmd_postfix += " --frozen"
+
+    c.run(f"uv sync --active --inexact {cmd_postfix}", pty=True)
+    _sync_requirements(c)
+
+
+@task(post=[pysync], aliases=["pyupdate"])
+def pyupgrade(c, verbose=False):
+    cmd_postfix = ""
+    if verbose:
+        cmd_postfix += " --verbose"
+
+    c.run(f"uv lock --upgrade {cmd_postfix}", pty=True)
+
+
+@task(post=[clear], iterable=["p"])
+def pyadd_dep(c, p, dev=False, update_lock=True, verbose=False):
+    cmd_postfix = ""
+    if dev:
+        cmd_postfix += " --optional dev"
+    if verbose:
+        cmd_postfix += " --verbose"
+    if not update_lock:
+        cmd_postfix += " --frozen"
+
+    packages = " ".join(p)
+
+    c.run(f"uv add --active {cmd_postfix} {packages}", pty=True)
+    _sync_requirements(c)
+
+
+def _sync_requirements(c) -> None:
+    common_cmd_postfix = (
+        " --format requirements-txt --no-editable --no-emit-project --frozen --no-hashes -q"
+    )
+    c.run(f"uv export -o requirements.txt --no-dev {common_cmd_postfix} ", pty=True)
+    c.run(f"uv export -o requirements-dev.txt --extra dev {common_cmd_postfix} ", pty=True)
