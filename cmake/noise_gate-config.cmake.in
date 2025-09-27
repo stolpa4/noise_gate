@@ -1,0 +1,6 @@
+# cmake/noise_gate-config.cmake.in
+
+@PACKAGE_INIT@
+
+include("${CMAKE_CURRENT_LIST_DIR}/noise_gate-targets.cmake")
+check_required_components(noise_gate)
