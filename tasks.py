@@ -23,6 +23,7 @@ def clear(c):
 def cbuild(
     c,
     debug=True,
+    app=True,
     tests=True,
     sanitize_address=False,
     sanitize_ub=False,
@@ -34,6 +35,7 @@ def cbuild(
 ):
     cmake_flags = [
         f"-DCMAKE_BUILD_TYPE={'Debug' if debug else 'Release'}",
+        f"-DBUILD_APP={'ON' if app else 'OFF'}",
         f"-DBUILD_TESTS={'ON' if tests else 'OFF'}",
         f"-DSANITIZE_ADDRESS={'ON' if sanitize_address else 'OFF'}",
         f"-DSANITIZE_UB={'ON' if sanitize_ub else 'OFF'}",

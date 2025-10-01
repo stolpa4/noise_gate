@@ -15,6 +15,8 @@ project(
         DESCRIPTION "Library for audio noise reduction"
         LANGUAGES CXX C)
 
+list(APPEND CMAKE_MODULE_PATH "${CMAKE_SOURCE_DIR}/cmake/Modules")
+
 ## Library and sources
 ######################
 
