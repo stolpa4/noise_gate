@@ -115,6 +115,15 @@ if(BUILD_TESTS)
 endif()
 
 
+## App
+######
+
+option(BUILD_APP "build the app" OFF)
+if(BUILD_APP)
+    message(STATUS "Building app")
+    add_subdirectory(app)
+endif()
+
 ## Installation
 ###############
 
