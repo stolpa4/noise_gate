@@ -111,6 +111,7 @@ endif()
 option(BUILD_TESTS "build the tests" OFF)
 if(BUILD_TESTS)
     message(STATUS "Building tests")
+    enable_testing()
     add_subdirectory(tests)
 endif()
 
